@@ -23,11 +23,11 @@ export class AppComponent implements OnInit, OnDestroy {
   
   navLinks = [
     { name: 'Avaleht', href: '#', active: true },
-    { name: 'Sarjad', href: '#', active: false },
-    { name: 'Filmid', href: '#', active: false },
-    { name: 'Dokid', href: '#', active: false },
-    { name: 'Audio', href: '#', active: false },
-    { name: 'Otse', href: '#', active: false }
+    { name: 'Saated', href: 'https://jupiter.err.ee/v-saated', active: false },
+    { name: 'Sarjad', href: 'https://jupiter.err.ee/sarjad', active: false },
+    { name: 'Filmid', href: 'https://jupiter.err.ee/filmid', active: false },
+    { name: 'Raadioteater', href: 'https://jupiter.err.ee/raadioteater', active: false },
+    { name: 'Otse', href: 'https://jupiter.err.ee/telekava', active: false }
   ];
   
   searchSuggestions: SearchSuggestion[] = [
