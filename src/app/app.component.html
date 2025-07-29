@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+</head>
+<body (keydown)="onKeydown($event)">
+    <header class="header" [class.scrolled]="isHeaderScrolled">
+        <nav class="nav">
+            <a href="#" class="logo">Jupiter</a>
+            <ul class="nav-links">
+                <li *ngFor="let link of navLinks; let i = index">
+                    <a href="{{link.href}}" 
+                       [class.active]="link.active"
+                       (click)="setActiveNavLink(i)">
+                        {{link.name}}
+                    </a>
+                </li>
+            </ul>
+            <div class="user-actions">
+                <button class="search-btn" (click)="openSearch()">🔍</button>
+                <button class="profile-btn">👤</button>
+            </div>
+        </nav>
+    </header>
+
+    <div class="search-overlay" [class.active]="isSearchActive">
+        <div class="search-container">
+            <div class="search-header">
+                <div class="search-input-wrapper">
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        id="searchInput"
+                        [(ngModel)]="searchQuery"
+                        (input)="onSearchInput($any($event.target).value)"
+                        placeholder="Otsi sarju, filme, dokke, audiosisu..." 
+                        autocomplete="off">
+                    <span class="search-icon">🔍</span>
+                </div>
+                <button class="close-search" (click)="closeSearch()">×</button>
+            </div>
+            
+            <div class="search-suggestions">
+                <span 
+                    *ngFor="let suggestion of searchSuggestions"
+                    class="suggestion-tag" 
+                    (click)="searchFor(suggestion.searchTerm, suggestion.display)">
+                    {{suggestion.display}}
+                </span>
+            </div>
+
+            <div class="search-results" *ngIf="searchResults.length > 0">
+                <div class="search-results-header">
+                    Leitud {{searchResults.length}} tulemust päringule "{{searchQuery}}"
+                </div>
+                
+                <div 
+                    *ngFor="let movie of searchResults; trackBy: trackByMovie"
+                    class="search-result-item" 
+                    (click)="handleMovieClick(movie)">
+                    <div class="search-result-poster">
+                        <img 
+                            [src]="movie.poster || movie.icon" 
+                            [alt]="movie.title"
+                            style="width: 100%; height: 100%; object-fit: cover; border-radius: 4px;"
+                            (error)="onImageError($event)">
+                        <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; font-size: 1.5rem;">
+                            {{movie.icon || '🎬'}}
+                        </div>
+                    </div>
+                    <div class="search-result-info">
+                        <div class="search-result-title">{{movie.title}}</div>
+                        <div class="search-result-meta">{{getMovieMetaInfo(movie)}}</div>
+                    </div>
+                    <button 
+                        class="favorites-btn" 
+                        (click)="addToFavorites(movie, $event)" 
+                        title="Lisa lemmikutesse">
+                        <span class="heart-icon">♡</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="no-results" *ngIf="showNoResults">
+                <div class="no-results-icon">🔍</div>
+                <p>Tulemusi ei leitud</p>
+                <p style="font-size: 0.9rem; margin-top: 10px;">Proovi teisi otsingusõnu</p>
+            </div>
+        </div>
+    </div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">ERR-i Jupiter</h1>
+            <p class="hero-description">
+                Tasuta eestikeelne voogedastusplatvorm, mis koondab ERR-i parimad sarjad, filmid, 
+                dokumentaalid ja audiosisu. Vaata kohe või hiljem - sinu valikul!
+            </p>
+            <div class="hero-buttons">
+                <a href="#" class="btn btn-primary">▶ Hakka vaatama</a>
+                <a href="#" class="btn btn-secondary">📱 Laadi rakendus</a>
+            </div>
+        </div>
+    </section>
+
+    <main class="content-sections">
+        <section 
+            *ngFor="let section of movieSections; trackBy: trackBySection"
+            class="movie-section">
+            <div class="section-header">
+                <h2 class="section-title">{{section.title}}</h2>
+                <a 
+                    *ngIf="section.viewAllUrl" 
+                    [href]="section.viewAllUrl" 
+                    class="view-all" 
+                    target="_blank">
+                    Vaata kõiki →
+                </a>
+            </div>
+            <div class="movie-row">
+                <button 
+                    class="scroll-btn prev" 
+                    (click)="scrollMovies($event, 'left')">‹</button>
+                
+                <div class="movies-container">
+                    <div 
+                        *ngFor="let movie of section.movies; trackBy: trackByMovie"
+                        class="movie-card"
+                        [class.poster-only]="!hasValidMovieInfo(movie)"
+                        (click)="handleMovieClick(movie)">
+                        
+                        <div class="movie-poster">
+                            <img 
+                                [src]="movie.poster || movie.icon" 
+                                [alt]="movie.title"
+                                (error)="onImageError($event)">
+                            <div class="poster-fallback" style="display: none;">
+                                {{movie.icon || '🎬'}}
+                            </div>
+                            <button 
+                                class="favorites-btn" 
+                                (click)="addToFavorites(movie, $event)" 
+                                title="Lisa lemmikutesse">
+                                <span class="heart-icon">♡</span>
+                            </button>
+                        </div>
+                        
+                        <div class="movie-info" *ngIf="hasValidMovieInfo(movie)">
+                            <h3 class="movie-title">{{movie.title}}</h3>
+                            <div class="movie-meta">
+                                <span *ngIf="movie.year">{{movie.year}}</span>
+                                <span *ngIf="movie.duration">{{movie.duration}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button 
+                    class="scroll-btn next" 
+                    (click)="scrollMovies($event, 'right')">›</button>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
