@@ -10,3 +10,5 @@
 *App jookseb localhost:4200
 <br/>
 *Search bar on funktsionaalne. Ainukene horisontaalne riba mis vastab posteri ja nimede poolest üks ühele https://jupiter.err.ee/video on kõige ülemine riba: "Enim Vaadatud".
+<br/>
+*PS tuli alles lõpus meelde, et rakendus peab external API URL andmeid küsima, minu paha.
